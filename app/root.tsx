@@ -31,6 +31,7 @@ const App = () => {
         <html lang="en">
             <head>
                 <meta charSet="utf-8" />
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 <title>Remix: So great, it's funny!</title>
                 <Links />
             </head>
