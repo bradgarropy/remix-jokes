@@ -1,7 +1,37 @@
-import type {LinkDescriptor, LinksFunction} from "@remix-run/node"
-import {Link, Outlet} from "@remix-run/react"
+import type {Joke} from "@prisma/client"
+import type {
+    LinkDescriptor,
+    LinksFunction,
+    LoaderFunction,
+} from "@remix-run/node"
+import {json} from "@remix-run/node"
+import {Link, Outlet, useLoaderData} from "@remix-run/react"
 
 import jokesStylesUrl from "~/styles/jokes.css"
+import {db} from "~/utils/db.server"
+
+type LoaderData = {
+    jokes: Pick<Joke, "id" | "name">[]
+}
+
+const loader: LoaderFunction = async () => {
+    const jokes = await db.joke.findMany({
+        take: 5,
+        select: {
+            id: true,
+            name: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    })
+
+    const data: LoaderData = {
+        jokes,
+    }
+
+    return json(data)
+}
 
 const links: LinksFunction = () => {
     const links: LinkDescriptor[] = [
@@ -15,6 +45,8 @@ const links: LinksFunction = () => {
 }
 
 const JokesRoute = () => {
+    const data = useLoaderData<LoaderData>()
+
     return (
         <div className="jokes-layout">
             <header className="jokes-header">
@@ -40,15 +72,23 @@ const JokesRoute = () => {
                         <p>Here are a few more jokes to check out:</p>
 
                         <ul>
-                            <li>
-                                <Link to="some-joke-id">Hippo</Link>
-                            </li>
+                            {data.jokes.map(joke => {
+                                return (
+                                    <li key={joke.id}>
+                                        <Link to={joke.id}>{joke.name}</Link>
+                                    </li>
+                                )
+                            })}
                         </ul>
-                    </div>
-                </div>
 
-                <div className="jokes-outlet">
-                    <Outlet />
+                        <Link to="new" className="button">
+                            Add your own
+                        </Link>
+                    </div>
+
+                    <div className="jokes-outlet">
+                        <Outlet />
+                    </div>
                 </div>
             </main>
         </div>
@@ -56,4 +96,4 @@ const JokesRoute = () => {
 }
 
 export default JokesRoute
-export {links}
+export {links, loader}
