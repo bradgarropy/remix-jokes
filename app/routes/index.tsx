@@ -21,6 +21,7 @@ const IndexRoute = () => {
                 <h1>
                     Remix <span>Jokes!</span>
                 </h1>
+
                 <nav>
                     <ul>
                         <li>
