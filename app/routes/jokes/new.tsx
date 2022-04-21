@@ -40,7 +40,7 @@ const action: ActionFunction = async ({request}) => {
         )
     }
 
-    const fieldErrors = {
+    const fieldErrors: ActionData["fieldErrors"] = {
         name: validateJokeName(name),
         content: validateJokeContent(content),
     }
