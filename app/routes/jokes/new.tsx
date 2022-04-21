@@ -15,6 +15,18 @@ type ActionData = {
     fields?: Pick<Joke, "name" | "content">
 }
 
+const validateJokeName = (name: string) => {
+    if (name.length < 3) {
+        return "That joke's name is too short"
+    }
+}
+
+const validateJokeContent = (content: string) => {
+    if (content.length < 10) {
+        return "That joke is too short"
+    }
+}
+
 const action: ActionFunction = async ({request}) => {
     const form = await request.formData()
 
@@ -28,27 +40,15 @@ const action: ActionFunction = async ({request}) => {
         )
     }
 
-    if (name.length < 3) {
-        return json<ActionData>(
-            {
-                fieldErrors: {
-                    name: "That joke's name is too short",
-                },
-                fields: {
-                    name,
-                    content,
-                },
-            },
-            {status: 400},
-        )
+    const fieldErrors = {
+        name: validateJokeName(name),
+        content: validateJokeContent(content),
     }
 
-    if (content.length < 10) {
+    if (Object.values(fieldErrors).some(Boolean)) {
         return json<ActionData>(
             {
-                fieldErrors: {
-                    content: "That joke is too short",
-                },
+                fieldErrors,
                 fields: {
                     name,
                     content,
