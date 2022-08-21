@@ -4,8 +4,8 @@ import {PrismaClient} from "@prisma/client"
 const db = new PrismaClient()
 
 const mockUser = {
-    username: "Brad",
-    passwordHash: "abc123",
+    username: "bradgarropy",
+    passwordHash: "password",
 }
 
 const mockJokes = [

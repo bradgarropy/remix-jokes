@@ -7,6 +7,8 @@ import {json} from "@remix-run/node"
 import {Link, useActionData, useSearchParams} from "@remix-run/react"
 
 import loginStylesUrl from "~/styles/login.css"
+import {login} from "~/utils/auth.server"
+import {db} from "~/utils/db.server"
 
 const links: LinksFunction = () => {
     const links: LinkDescriptor[] = [
@@ -87,10 +89,28 @@ const action: ActionFunction = async ({request}) => {
 
     switch (loginType) {
         case "login": {
-            return json({formError: "login not implemented", fields})
+            const user = await login({username, password})
+
+            if (!user) {
+                return json({
+                    formError: "Incorrect username or password",
+                    fields,
+                })
+            }
+
+            return json({fields, formError: "not implemented"})
         }
 
         case "register": {
+            const user = await db.user.findFirst({where: {username}})
+
+            if (user) {
+                return json({
+                    fields,
+                    formError: `User with username ${username} already exists`,
+                })
+            }
+
             return json({formError: "register not implemented", fields})
         }
 
@@ -123,6 +143,7 @@ const LoginRoute = () => {
                                 name="loginType"
                                 value="login"
                                 defaultChecked={
+                                    !actionData?.fields?.loginType ||
                                     actionData?.fields?.loginType === "login"
                                 }
                             />
