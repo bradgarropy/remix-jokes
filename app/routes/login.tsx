@@ -7,7 +7,7 @@ import {json} from "@remix-run/node"
 import {Link, useActionData, useSearchParams} from "@remix-run/react"
 
 import loginStylesUrl from "~/styles/login.css"
-import {login} from "~/utils/auth.server"
+import {createSession, login} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
 
 const links: LinksFunction = () => {
@@ -49,7 +49,7 @@ const validatePassword = (password: string) => {
 const action: ActionFunction = async ({request}) => {
     const form = await request.formData()
 
-    const redirectTo = form.get("redirectTo")
+    const redirectTo = form.get("redirectTo") || "/jokes"
     const loginType = form.get("loginType")
     const username = form.get("username")
     const password = form.get("password")
@@ -98,7 +98,7 @@ const action: ActionFunction = async ({request}) => {
                 })
             }
 
-            return json({fields, formError: "not implemented"})
+            return createSession(user.id, redirectTo)
         }
 
         case "register": {
