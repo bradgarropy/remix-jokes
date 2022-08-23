@@ -1,5 +1,5 @@
 import type {Joke} from "@prisma/client"
-import type {LoaderFunction} from "@remix-run/node"
+import type {ErrorBoundaryComponent, LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {Link, useLoaderData} from "@remix-run/react"
 
@@ -24,6 +24,10 @@ const loader: LoaderFunction = async ({params}) => {
     return json(data)
 }
 
+const ErrorBoundary: ErrorBoundaryComponent = () => {
+    return <div>Whoops! Something went wrong.</div>
+}
+
 const JokeRoute = () => {
     const data = useLoaderData<LoaderData>()
 
@@ -38,4 +42,4 @@ const JokeRoute = () => {
 }
 
 export default JokeRoute
-export {loader}
+export {ErrorBoundary, loader}
