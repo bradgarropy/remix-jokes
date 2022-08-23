@@ -1,5 +1,10 @@
-import type {LinkDescriptor, LinksFunction} from "@remix-run/node"
+import type {
+    ErrorBoundaryComponent,
+    LinkDescriptor,
+    LinksFunction,
+} from "@remix-run/node"
 import {Links, LiveReload, Outlet} from "@remix-run/react"
+import type {FC, ReactNode} from "react"
 
 import globalStylesUrl from "~/styles/global.css"
 import globalLargeStylesUrl from "~/styles/global-large.css"
@@ -26,23 +31,50 @@ const links: LinksFunction = () => {
     return links
 }
 
-const App = () => {
+type DocumentProps = {
+    title?: string
+    children?: ReactNode
+}
+
+const Document: FC<DocumentProps> = ({
+    title = "Remix: So great, it's funny!",
+    children,
+}) => {
     return (
         <html lang="en">
             <head>
                 <meta charSet="utf-8" />
                 {/* eslint-disable-next-line react/no-unescaped-entities */}
-                <title>Remix: So great, it's funny!</title>
+                <title>{title}</title>
                 <Links />
             </head>
 
             <body>
-                <Outlet />
-                <LiveReload />
+                {children}
+                {process.env.NODE_ENV === "development" ? <LiveReload /> : null}
             </body>
         </html>
     )
 }
 
+const App = () => {
+    return (
+        <Document>
+            <Outlet />
+        </Document>
+    )
+}
+
+const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
+    return (
+        <Document title="Oh no!">
+            <div className="error-container">
+                <h1>Something went wrong</h1>
+                <p>{error.message}</p>
+            </div>
+        </Document>
+    )
+}
+
 export default App
-export {links}
+export {ErrorBoundary, links}
