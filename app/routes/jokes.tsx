@@ -1,4 +1,4 @@
-import type {Joke} from "@prisma/client"
+import type {Joke, User} from "@prisma/client"
 import type {
     LinkDescriptor,
     LinksFunction,
@@ -8,13 +8,17 @@ import {json} from "@remix-run/node"
 import {Link, Outlet, useLoaderData} from "@remix-run/react"
 
 import jokesStylesUrl from "~/styles/jokes.css"
+import {getUser} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
 
 type LoaderData = {
     jokes: Pick<Joke, "id" | "name">[]
+    user: User | null
 }
 
-const loader: LoaderFunction = async () => {
+const loader: LoaderFunction = async ({request}) => {
+    const user = await getUser(request)
+
     const jokes = await db.joke.findMany({
         take: 5,
         select: {
@@ -28,6 +32,7 @@ const loader: LoaderFunction = async () => {
 
     const data: LoaderData = {
         jokes,
+        user,
     }
 
     return json(data)
@@ -61,6 +66,19 @@ const JokesRoute = () => {
                             <span className="logo-medium">J🤪KES</span>
                         </Link>
                     </h1>
+
+                    {data.user ? (
+                        <div className="user-info">
+                            <span>{`Hi ${data.user.username}`}</span>
+                            <form action="/logout" method="post">
+                                <button type="submit" className="button">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    ) : (
+                        <Link to="/login">Login</Link>
+                    )}
                 </div>
             </header>
 

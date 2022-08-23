@@ -24,6 +24,16 @@ const login = async ({username, password}: Credentials) => {
     return user
 }
 
+const logout = async (request: Request) => {
+    const session = await getSession(request)
+
+    return redirect("/jokes", {
+        headers: {
+            "Set-Cookie": await storage.destroySession(session),
+        },
+    })
+}
+
 const sessionSecret = process.env.SESSION_SECRET
 
 if (!sessionSecret) {
@@ -68,6 +78,20 @@ const getUserId = async (request: Request) => {
     return userId
 }
 
+const getUser = async (request: Request) => {
+    const userId = await getUserId(request)
+
+    if (!userId) {
+        return null
+    }
+
+    return db.user.findUnique({
+        where: {
+            id: userId,
+        },
+    })
+}
+
 // use this for protected routes
 const requireUserId = async (
     request: Request,
@@ -83,4 +107,4 @@ const requireUserId = async (
     return userId
 }
 
-export {createSession, getUserId, login, requireUserId}
+export {createSession, getUser, getUserId, login, logout, requireUserId}
