@@ -53,4 +53,34 @@ const createSession = async (userId: string, redirectTo: string) => {
     })
 }
 
-export {createSession, login}
+const getSession = (request: Request) => {
+    return storage.getSession(request.headers.get("Cookie"))
+}
+
+const getUserId = async (request: Request) => {
+    const session = await getSession(request)
+    const userId = session.get("userId")
+
+    if (typeof userId !== "string") {
+        return null
+    }
+
+    return userId
+}
+
+// use this for protected routes
+const requireUserId = async (
+    request: Request,
+    redirectTo: string = new URL(request.url).pathname,
+) => {
+    const userId = await getUserId(request)
+
+    if (!userId) {
+        const params = new URLSearchParams([["redirectTo", redirectTo]])
+        throw redirect(`/login?${params}`)
+    }
+
+    return userId
+}
+
+export {createSession, getUserId, login, requireUserId}

@@ -4,6 +4,7 @@ import {json} from "@remix-run/node"
 import {redirect} from "@remix-run/node"
 import {useActionData} from "@remix-run/react"
 
+import {requireUserId} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
 
 type ActionData = {
@@ -27,9 +28,16 @@ const validateJokeContent = (content: string) => {
     }
 }
 
-const action: ActionFunction = async ({request}) => {
-    const form = await request.formData()
+// use this to prevent loading a page where authentication is required
+// const loader: LoaderFunction = async ({request}) => {
+//     await requireUserId(request)
+//     return {}
+// }
 
+const action: ActionFunction = async ({request}) => {
+    const userId = await requireUserId(request)
+
+    const form = await request.formData()
     const name = form.get("name")
     const content = form.get("content")
 
@@ -62,6 +70,7 @@ const action: ActionFunction = async ({request}) => {
         data: {
             name,
             content,
+            userId,
         },
     })
 
