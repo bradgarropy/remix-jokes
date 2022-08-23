@@ -1,5 +1,5 @@
 import type {Joke} from "@prisma/client"
-import type {ActionFunction} from "@remix-run/node"
+import type {ActionFunction, ErrorBoundaryComponent} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {redirect} from "@remix-run/node"
 import {useActionData} from "@remix-run/react"
@@ -133,5 +133,13 @@ const NewJokeRoute = () => {
     )
 }
 
+const ErrorBoundary: ErrorBoundaryComponent = () => {
+    return (
+        <div className="error-container">
+            Something went wrong creating your joke.
+        </div>
+    )
+}
+
 export default NewJokeRoute
-export {action}
+export {action, ErrorBoundary}
