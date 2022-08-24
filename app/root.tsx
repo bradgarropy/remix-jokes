@@ -3,7 +3,7 @@ import type {
     LinkDescriptor,
     LinksFunction,
 } from "@remix-run/node"
-import {Links, LiveReload, Outlet} from "@remix-run/react"
+import {Link, Links, LiveReload, Outlet, useCatch} from "@remix-run/react"
 import type {FC, ReactNode} from "react"
 
 import globalStylesUrl from "~/styles/global.css"
@@ -65,6 +65,26 @@ const App = () => {
     )
 }
 
+const CatchBoundary = () => {
+    const caught = useCatch()
+
+    switch (caught.status) {
+        case 401: {
+            return (
+                <Document title="Oh no!">
+                    <div className="error-container">
+                        <p>You must login to proceed.</p>
+                        <Link to="/login">Login</Link>
+                    </div>
+                </Document>
+            )
+        }
+
+        default:
+            break
+    }
+}
+
 const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
     return (
         <Document title="Oh no!">
@@ -77,4 +97,4 @@ const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
 }
 
 export default App
-export {ErrorBoundary, links}
+export {CatchBoundary, ErrorBoundary, links}

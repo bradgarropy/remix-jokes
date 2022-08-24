@@ -1,10 +1,14 @@
 import type {Joke} from "@prisma/client"
-import type {ActionFunction, ErrorBoundaryComponent} from "@remix-run/node"
+import type {
+    ActionFunction,
+    ErrorBoundaryComponent,
+    LoaderFunction,
+} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {redirect} from "@remix-run/node"
-import {useActionData} from "@remix-run/react"
+import {Link, useActionData, useCatch} from "@remix-run/react"
 
-import {requireUserId} from "~/utils/auth.server"
+import {getUserId, requireUserId} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
 
 type ActionData = {
@@ -33,6 +37,16 @@ const validateJokeContent = (content: string) => {
 //     await requireUserId(request)
 //     return {}
 // }
+
+const loader: LoaderFunction = async ({request}) => {
+    const userId = await getUserId(request)
+
+    if (!userId) {
+        throw new Response("Please login.", {status: 401})
+    }
+
+    return {}
+}
 
 const action: ActionFunction = async ({request}) => {
     const userId = await requireUserId(request)
@@ -133,13 +147,31 @@ const NewJokeRoute = () => {
     )
 }
 
+const CatchBoundary = () => {
+    const caught = useCatch()
+
+    switch (caught.status) {
+        case 401: {
+            return (
+                <div className="error-container">
+                    <p>You must login to create a joke.</p>
+                    <Link to="/login">Login</Link>
+                </div>
+            )
+        }
+
+        default:
+            break
+    }
+}
+
 const ErrorBoundary: ErrorBoundaryComponent = () => {
     return (
         <div className="error-container">
-            Something went wrong creating your joke.
+            <p>Something went wrong creating your joke.</p>
         </div>
     )
 }
 
 export default NewJokeRoute
-export {action, ErrorBoundary}
+export {action, CatchBoundary, ErrorBoundary, loader}

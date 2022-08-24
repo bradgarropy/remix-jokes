@@ -1,7 +1,7 @@
 import type {Joke} from "@prisma/client"
 import type {ErrorBoundaryComponent, LoaderFunction} from "@remix-run/node"
 import {json} from "@remix-run/node"
-import {Link, useLoaderData} from "@remix-run/react"
+import {Link, useCatch, useLoaderData} from "@remix-run/react"
 
 import {db} from "~/utils/db.server"
 
@@ -17,6 +17,10 @@ const loader: LoaderFunction = async () => {
         take: 1,
         skip: randomIndex,
     })
+
+    if (!joke) {
+        throw new Response("No random joke found.", {status: 404})
+    }
 
     const data: LoaderData = {
         joke,
@@ -39,13 +43,30 @@ const JokesIndexRoute = () => {
     )
 }
 
+const CatchBoundary = () => {
+    const caught = useCatch()
+
+    switch (caught.status) {
+        case 404: {
+            return (
+                <div className="error-container">
+                    <p>There are no jokes to tell.</p>
+                </div>
+            )
+        }
+
+        default:
+            break
+    }
+}
+
 const ErrorBoundary: ErrorBoundaryComponent = () => {
     return (
         <div className="error-container">
-            Something went wrong loading your jokes.
+            <p>Something went wrong loading your jokes.</p>
         </div>
     )
 }
 
 export default JokesIndexRoute
-export {ErrorBoundary, loader}
+export {CatchBoundary, ErrorBoundary, loader}
