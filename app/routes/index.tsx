@@ -1,4 +1,4 @@
-import type {LinkDescriptor, LinksFunction} from "@remix-run/node"
+import type {LinkDescriptor, LinksFunction, MetaFunction} from "@remix-run/node"
 import {Link} from "@remix-run/react"
 
 import stylesUrl from "~/styles/index.css"
@@ -13,6 +13,11 @@ const links: LinksFunction = () => {
 
     return links
 }
+
+const meta: MetaFunction = () => ({
+    title: "Remix: So great, it's funny!",
+    description: "Remix jokes app. Learn Remix and laugh at the same time!",
+})
 
 const IndexRoute = () => {
     return (
@@ -35,4 +40,4 @@ const IndexRoute = () => {
 }
 
 export default IndexRoute
-export {links}
+export {links, meta}

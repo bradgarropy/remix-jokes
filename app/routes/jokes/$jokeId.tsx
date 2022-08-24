@@ -1,38 +1,65 @@
-import type {Joke} from "@prisma/client"
+import type {Joke, User} from "@prisma/client"
 import type {
     ActionFunction,
     ErrorBoundaryComponent,
     LoaderFunction,
+    MetaFunction,
 } from "@remix-run/node"
 import {redirect} from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {Link, useCatch, useLoaderData, useParams} from "@remix-run/react"
 
-import {getUserId, requireUserId} from "~/utils/auth.server"
+import {getUser, requireUserId} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
 
 type LoaderData = {
     joke: Pick<Joke, "name" | "content">
+    username: User["username"]
     isOwner: boolean
 }
 
 const loader: LoaderFunction = async ({request, params}) => {
-    const userId = await getUserId(request)
-
     const joke = await db.joke.findUnique({
         where: {
             id: params.jokeId,
         },
     })
 
-    const isOwner = joke?.userId === userId
-
     if (!joke) {
         throw new Response("Joke not found.", {status: 404})
     }
 
-    const data: LoaderData = {joke, isOwner}
+    const user = await getUser(request)
+
+    if (!user) {
+        throw new Response("User not found.", {status: 404})
+    }
+
+    const data: LoaderData = {
+        joke,
+        username: user.username,
+        isOwner: joke.id === user.id,
+    }
+
     return json(data)
+}
+
+type MetaFunctionProps = {
+    data?: LoaderData
+}
+
+const meta: MetaFunction = ({data}: MetaFunctionProps) => {
+    if (!data) {
+        return {
+            title: "Whoops",
+            description: "Something went wrong loading the joke.",
+        }
+    }
+
+    return {
+        title: data.joke.name,
+        description: `A funny joke by ${data.username}.`,
+    }
 }
 
 const action: ActionFunction = async ({request, params}) => {
@@ -132,4 +159,4 @@ const ErrorBoundary: ErrorBoundaryComponent = () => {
 }
 
 export default JokeRoute
-export {action, CatchBoundary, ErrorBoundary, loader}
+export {action, CatchBoundary, ErrorBoundary, loader, meta}

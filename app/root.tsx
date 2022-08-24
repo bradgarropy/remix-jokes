@@ -3,7 +3,7 @@ import type {
     LinkDescriptor,
     LinksFunction,
 } from "@remix-run/node"
-import {Link, Links, LiveReload, Outlet, useCatch} from "@remix-run/react"
+import {Link, Links, LiveReload, Meta, Outlet, useCatch} from "@remix-run/react"
 import type {FC, ReactNode} from "react"
 
 import globalStylesUrl from "~/styles/global.css"
@@ -43,6 +43,7 @@ const Document: FC<DocumentProps> = ({
     return (
         <html lang="en">
             <head>
+                <Meta />
                 <meta charSet="utf-8" />
                 {/* eslint-disable-next-line react/no-unescaped-entities */}
                 <title>{title}</title>

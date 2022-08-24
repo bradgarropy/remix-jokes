@@ -2,6 +2,7 @@ import type {
     ActionFunction,
     LinkDescriptor,
     LinksFunction,
+    MetaFunction,
 } from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {Link, useActionData, useSearchParams} from "@remix-run/react"
@@ -43,6 +44,13 @@ const validateUsername = (username: string) => {
 const validatePassword = (password: string) => {
     if (password.length < 6) {
         return "Passwords must be at least 6 characters long"
+    }
+}
+
+const meta: MetaFunction = () => {
+    return {
+        title: "Remix Jokes | Login",
+        description: "Login to submit your own jokes to Remix Jokes!",
     }
 }
 
@@ -226,4 +234,4 @@ const LoginRoute = () => {
 }
 
 export default LoginRoute
-export {action, links}
+export {action, links, meta}
