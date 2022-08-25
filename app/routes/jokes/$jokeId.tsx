@@ -23,6 +23,13 @@ const loader: LoaderFunction = async ({request, params}) => {
         where: {
             id: params.jokeId,
         },
+        include: {
+            User: {
+                select: {
+                    username: true,
+                },
+            },
+        },
     })
 
     if (!joke) {
@@ -31,14 +38,10 @@ const loader: LoaderFunction = async ({request, params}) => {
 
     const user = await getUser(request)
 
-    if (!user) {
-        throw new Response("User not found.", {status: 404})
-    }
-
     const data: LoaderData = {
         joke,
-        username: user.username,
-        isOwner: joke.id === user.id,
+        username: joke?.User.username,
+        isOwner: joke.userId === user?.id,
     }
 
     return json(data)
