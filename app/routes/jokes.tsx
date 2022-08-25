@@ -94,7 +94,9 @@ const JokesRoute = () => {
                             {data.jokes.map(joke => {
                                 return (
                                     <li key={joke.id}>
-                                        <Link to={joke.id}>{joke.name}</Link>
+                                        <Link prefetch="intent" to={joke.id}>
+                                            {joke.name}
+                                        </Link>
                                     </li>
                                 )
                             })}
