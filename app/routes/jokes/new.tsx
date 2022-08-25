@@ -6,7 +6,13 @@ import type {
 } from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {redirect} from "@remix-run/node"
-import {Form, Link, useActionData, useCatch} from "@remix-run/react"
+import {
+    Form,
+    Link,
+    useActionData,
+    useCatch,
+    useTransition,
+} from "@remix-run/react"
 
 import {getUserId, requireUserId} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
@@ -93,6 +99,7 @@ const action: ActionFunction = async ({request}) => {
 
 const NewJokeRoute = () => {
     const actionData = useActionData<ActionData>()
+    const transition = useTransition()
 
     return (
         <div>
@@ -139,7 +146,7 @@ const NewJokeRoute = () => {
                     ) : null}
 
                     <button type="submit" className="button">
-                        Add
+                        {transition.submission ? "Adding..." : "Add"}
                     </button>
                 </div>
             </Form>

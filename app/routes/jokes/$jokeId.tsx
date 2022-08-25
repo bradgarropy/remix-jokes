@@ -7,7 +7,14 @@ import type {
 } from "@remix-run/node"
 import {redirect} from "@remix-run/node"
 import {json} from "@remix-run/node"
-import {Form, Link, useCatch, useLoaderData, useParams} from "@remix-run/react"
+import {
+    Form,
+    Link,
+    useCatch,
+    useLoaderData,
+    useParams,
+    useTransition,
+} from "@remix-run/react"
 
 import {getUser, requireUserId} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
@@ -96,6 +103,7 @@ const action: ActionFunction = async ({request, params}) => {
 
 const JokeRoute = () => {
     const {joke, isOwner} = useLoaderData<LoaderData>()
+    const transition = useTransition()
 
     return (
         <div>
@@ -109,7 +117,7 @@ const JokeRoute = () => {
                     <input type="hidden" name="_method" value="delete" />
 
                     <button type="submit" className="button">
-                        Delete
+                        {transition.submission ? "Deleting..." : "Delete"}
                     </button>
                 </Form>
             ) : null}
