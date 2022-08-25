@@ -7,7 +7,7 @@ import type {
 } from "@remix-run/node"
 import {redirect} from "@remix-run/node"
 import {json} from "@remix-run/node"
-import {Link, useCatch, useLoaderData, useParams} from "@remix-run/react"
+import {Form, Link, useCatch, useLoaderData, useParams} from "@remix-run/react"
 
 import {getUser, requireUserId} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
@@ -105,13 +105,13 @@ const JokeRoute = () => {
             <Link to=".">{joke.name} Permalink</Link>
 
             {isOwner ? (
-                <form method="post">
+                <Form method="post">
                     <input type="hidden" name="_method" value="delete" />
 
                     <button type="submit" className="button">
                         Delete
                     </button>
-                </form>
+                </Form>
             ) : null}
         </div>
     )
@@ -151,7 +151,9 @@ const CatchBoundary = () => {
     }
 }
 
-const ErrorBoundary: ErrorBoundaryComponent = () => {
+const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
+    console.log(error)
+
     const {jokeId} = useParams()
 
     return (

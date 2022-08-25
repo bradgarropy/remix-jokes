@@ -5,7 +5,7 @@ import type {
     LoaderFunction,
 } from "@remix-run/node"
 import {json} from "@remix-run/node"
-import {Link, Outlet, useLoaderData} from "@remix-run/react"
+import {Form, Link, Outlet, useLoaderData} from "@remix-run/react"
 
 import jokesStylesUrl from "~/styles/jokes.css"
 import {getUser} from "~/utils/auth.server"
@@ -71,11 +71,11 @@ const JokesRoute = () => {
                         <div className="user-info">
                             <span>{`Hi ${data.user.username}`}</span>
 
-                            <form action="/logout" method="post">
+                            <Form action="/logout" method="post">
                                 <button type="submit" className="button">
                                     Logout
                                 </button>
-                            </form>
+                            </Form>
                         </div>
                     ) : (
                         <Link to="/login">Login</Link>

@@ -5,7 +5,7 @@ import type {
     MetaFunction,
 } from "@remix-run/node"
 import {json} from "@remix-run/node"
-import {Link, useActionData, useSearchParams} from "@remix-run/react"
+import {Form, Link, useActionData, useSearchParams} from "@remix-run/react"
 
 import loginStylesUrl from "~/styles/login.css"
 import {createSession, login, register} from "~/utils/auth.server"
@@ -138,7 +138,7 @@ const LoginRoute = () => {
             <div className="content" data-light="">
                 <h1>Login</h1>
 
-                <form method="post">
+                <Form method="post">
                     <input
                         type="hidden"
                         name="redirectTo"
@@ -215,7 +215,7 @@ const LoginRoute = () => {
                     <button type="submit" className="button">
                         Submit
                     </button>
-                </form>
+                </Form>
             </div>
 
             <div className="links">

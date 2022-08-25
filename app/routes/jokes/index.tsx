@@ -60,7 +60,9 @@ const CatchBoundary = () => {
     }
 }
 
-const ErrorBoundary: ErrorBoundaryComponent = () => {
+const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
+    console.log(error)
+
     return (
         <div className="error-container">
             <p>Something went wrong loading your jokes.</p>

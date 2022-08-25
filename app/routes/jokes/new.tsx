@@ -6,7 +6,7 @@ import type {
 } from "@remix-run/node"
 import {json} from "@remix-run/node"
 import {redirect} from "@remix-run/node"
-import {Link, useActionData, useCatch} from "@remix-run/react"
+import {Form, Link, useActionData, useCatch} from "@remix-run/react"
 
 import {getUserId, requireUserId} from "~/utils/auth.server"
 import {db} from "~/utils/db.server"
@@ -98,7 +98,7 @@ const NewJokeRoute = () => {
         <div>
             <p>Add your own hilarious joke</p>
 
-            <form method="post">
+            <Form method="post">
                 <div>
                     <label htmlFor="name">Name:</label>
                     <input
@@ -142,7 +142,7 @@ const NewJokeRoute = () => {
                         Add
                     </button>
                 </div>
-            </form>
+            </Form>
         </div>
     )
 }
@@ -165,7 +165,9 @@ const CatchBoundary = () => {
     }
 }
 
-const ErrorBoundary: ErrorBoundaryComponent = () => {
+const ErrorBoundary: ErrorBoundaryComponent = ({error}) => {
+    console.log(error)
+
     return (
         <div className="error-container">
             <p>Something went wrong creating your joke.</p>
